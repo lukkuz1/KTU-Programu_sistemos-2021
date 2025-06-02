@@ -1,0 +1,80 @@
+
+cd . , esamas darbinis katalogas*
+cd ..
+cd /home
+
+leidimai:
+chmod g+w komandinis.txt  ,daviau grupei leidima rasyti i /komandinis.txt
+chmod g-w komandinis.txt  ,atemiau grupei leidima rasyti i /komandinis
+txt
+chmod g=w komandinis.txt  ,palikau grupei tik leidima rasyti /komandinis.txt
+
+ps -efl, procesai visi, PPID (Tevas) rodi i (PID) o PID PPID, senelis
+touch //sukuria tiesiog faila
+echo iraso po viena eilute ">" istrina viska, ">>" netrina, //direktyva
+
+ls /sbin >> sbin3.txt //perkopijuoja 
+
+cp /home/lukkuz1/sbin.txt sbin4.txt  //perkopijuoja sbin.txt visa i sbin4.txt KATALOGA
+
+cat - eilute (po 1)
+cat sbin.txt /data/ld/ld1/tekstas1 > cccc  //sujungia du failu duomenis i viena
+
+more - puslapiais, 
+more -1 (po viena irasa) -2 = 2, ... ,
+more +n , nuo kelinto, more +/xnx , seka
+
+head , pirmi 10/ -5 , pirmi 5/
+head -2 sbin.txt /direktorija/ dvieju failu perziuri pirmas 2 eilutes
+
+tail, paskutiniai 10/ -5, paskutiniai 5/ +5 Visus be pirmu 5
+su '-c10' tai 10 char nuo galo, 'n', nieko
+
+ls | head -10 sbin.txt >> sbin10.txt // pirmus 10 is sbin.txt perkeli i sbin10.txt
+
+grep "ieskomas simbolis" /direktyva // -v , visus be "simbolio" ,-i, visus be "Aa simboliu"
+
+ls -l ,detali 
+
+ruosiuosi pagal skaiciu didejimo tvarka skirtiant : 3 stulpeli
+sort -n -t : -k 3 /etc/passwd
+
+rusiavimas pagal dydi 1k blokais
+du -k /etc | sort -n
+
+
+lyderis tai PID = PGID
+
+ps -o uid,pid,ppid,pgid,sid,tty,args
+
+ps -o pid,ppid,...,
+
+cd /etc/bash
+
+mv /usr/sbin/f1 /home/namai/Ldt1/f1
+
+
+cd ../../ -> /home
+
+
+top  , shift+f
+shift+m memory
+shift+p cpu
+shift+n procces id
+shhift+t time
+
+shift+r dabartini atvirksiciai
+
+sort top by time
+top -n 1 -b | tail -n +7 | sort  -k 11Vb
+lyderis tai PID = PGID
+
+ps -o uid,pid,ppid,pgid,sid,tty,args
+
+ps -o pid,ppid,...,
+
+cd /etc/bash
+
+mv /usr/sbin/f1 /home/namai/Ldt1/f1
+
+tail -5 sbin.txt | 

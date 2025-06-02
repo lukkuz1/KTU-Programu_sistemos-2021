@@ -1,0 +1,4 @@
+Pakeitimas:
++papildomos funkcijos (dėstytojai ir t.t.)
++mokiniai gali peržiurėti, į kokius modulius yra užsiregistravę
++notifikacijos, kai ištrinami kursai, pranešimai tiems mokiniams, kurie buvo užsiregistravę

@@ -1,0 +1,127 @@
+kd2 pvz
+
+#!/bin/bash
+
+if [[ $# -gt 0 ]]; then
+  for pts in "$@"; do
+    echo "-------------------------------------------------"
+    sysProc=$( ps -ef | awk -v p="$pts" '$6 == p { print $0 }' )
+    echo "Processes associated with terminal $pts:"
+    if [[ -z $sysProc ]]; then
+      echo "No processes found associated with terminal $pts."
+      continue
+    fi
+    echo "$sysProc" | awk '{ print $2 " " $6 " " $8}'
+    user=$(echo "$sysProc" | awk '{ print $1 }' | head -n 1)
+    echo "User associated with terminal $pts: $user"
+    whoResult=$(who | grep "$user")
+    if [[ -n $whoResult ]]; then
+      echo "This user is currently logged in."
+      echo "Their IP addresses are:"
+      ips=$(echo "$whoResult" | awk '{ print $5 }' | uniq)
+      for ip in $ips; do
+        if [[ $ip =~ ^158\.129 ]]; then
+          echo "$ip - internal IP"
+        else
+          echo "$ip"
+        fi
+      done
+      activeOn=$(who | grep "$user" | awk '{ print $2 }' | sort | uniq)
+      if [[ -n $activeOn ]]; then
+        echo "This user HAS active sessions associated with terminal $pts (based on who output)."
+      else
+        echo "This user DOES NOT HAVE active sessions associated with terminal $pts (based on who output)."
+      fi
+    else
+      echo "User is currently not logged in."
+    fi
+  done
+else
+  visi=$(ps -ef | awk '{ print $2 " " $6 " " $8 }')
+  echo "$visi"
+fi
+
+
+Sukurkite skriptą, kuris:
+1. (1.5) Iš failo /data/ld/ld2/studlog atrinktų sshd serviso eilutes, aprašančias sėkmingą vartotojo prisijungimą su slaptažodžiu (eilutėje yra tekstas Accepted password for), rastų prisijungusio vartotojo vardą ir IP adresą bei juos abu surašytų į failą data.log;
+2. (1.5) Jei pirmu skripto argumentu nurodytas failas (t.y. failas tokiu vardu yra), duomenis skaitytų iš jo (vietoje /data/ld/ld2/studlog);
+3. (1.5) Suskaičiuotų, kiek sistemos vartotojų yra mažai aktyvūs - t.y. sėkmingai su slaptažodžiu prisijungė į sistemą mažiau nei 5 kartus (imtinai), ir išvestų tokių vartotojų kiekį su antrašte "MAZIAU NEI 5 KARTUS JUNGESI:";
+4. (3) Kiekvienam sėkmingai prisijungusiam vartotojui sukurtų failą users/LOGIN.log (čia LOGIN - vartotojo vardas), kuriame surašytų IP adresus, iš kurių vartotojas jungėsi daugiau nei vieną kartą;
+5. (3) Pirmą skripto argumentą, jei tai nėra failo vardas (žr. 2-ą punktą), ir visus likusius argumentus laikytų vartotojų vardais ir juos kartu su tų vartotojų naudotais IP adresais be pasikartojimų surašytų į failą report.txt. Prisijungimų nevykdžiusių vartotojų vardų faile būti neturi;
+6. (0.5) Visų punktų generuojami rezultatai turi atitikti žemiau pateikto skripto vykdymo pavyzdžio formatą.
+
+
+#!/bin/sh
+# 1. Darydamas užduotis naudojuosi tik LD1 ir LD2 aprašais,
+#    sistemos pagalbos sistema (man ir pan.), savo darytomis LD užduotimis
+# 2. Užduotį darau savarankiškai be trečiųjų asmenų pagalbos
+# 3. Užduotį koreguoju naudodamasis vienu kompiuteriu
+#
+# Vardas Pavarde SUTINKU
+
+readfile="/data/ld/ld2/studlog"
+usersdir="users"
+
+if [ $# -ge 1 ]
+then
+	if [ -f $1 ]
+	then
+		readfile=$1
+	fi
+fi
+
+`cat $readfile | grep "sshd" | grep "Accepted password for" | awk '{print $12 " " $14}' > data.log`
+
+if [ ! -d $usersdir ]
+then
+	mkdir $usersdir
+fi
+
+inactive=0
+users=`cat data.log | awk '{print $1}' | sort | uniq`
+for user in $users
+do
+	logins=`cat data.log | grep "^$user " | wc -l`
+	frequent=`cat data.log | grep "^$user " | awk '{print $2}' | sort | uniq -c | awk '{if($1 >= 2) print $2}'`
+	if [ $logins -le 5 ]
+	then
+		inactive=$(($inactive+1))
+	fi
+	userfile="$usersdir/$user.log"
+	if [ -e $userfile ]
+	then
+		rm $userfile
+	fi
+	
+	for ip in $frequent
+	do
+		echo $ip >> $userfile
+	done
+done
+
+if [ $# -ge 1 ]
+then
+	if [ ! -f $1 ]
+	then
+		if [ -e "report.txt" ]
+		then
+			rm "report.txt"
+		fi
+		
+		for user in $*
+		do
+			uniqueips=`cat data.log | grep "^$user " | awk '{ print $2 }' | sort | uniq`
+			if [ "$uniqueips" ]
+			then
+				echo $user >> "report.txt"
+				for ip in $uniqueips
+				do
+					echo $ip >> "report.txt"
+				done
+			fi
+		done
+	fi
+fi
+
+echo "MAZIAU NEI 5 KARTUS JUNGESI: $inactive"
+

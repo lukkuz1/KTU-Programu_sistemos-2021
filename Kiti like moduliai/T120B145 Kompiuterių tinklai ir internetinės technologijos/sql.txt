@@ -1,0 +1,8 @@
+CREATE TABLE lukaskuzmickas (
+    id INT(5) AUTO_INCREMENT PRIMARY KEY,
+    vardas VARCHAR(20),
+    epastas VARCHAR(50),
+    kam VARCHAR(20),
+    data DATETIME,
+    zinute TEXT
+);
